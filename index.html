@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hook Cutter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <h1>Hook Cutter</h1>
+    <p class="privacy">Video tumhare browser me hi rehti hai. Kahin upload nahi hoti.</p>
+  </header>
+
+  <div class="grid">
+    <section class="left" aria-label="Video aur timeline">
+      <div class="card">
+        <input id="file" class="sr" type="file" accept="video/*,.mp4,.mov,.mkv,.webm,.m4v">
+
+        <div id="drop" class="drop">
+          <span class="tag">Source video</span>
+          <div>
+            <h2>Lambi video yahan chhodo</h2>
+            <p>Ya button se chuno. MP4, MOV ya WebM chalega. Lambi video me analysis me kuch minute lag sakte hain.</p>
+          </div>
+          <form id="linkForm" class="linkrow" hidden>
+            <label class="cap" for="ytUrl">YouTube link</label>
+            <div class="linkfield">
+              <input type="text" id="ytUrl" placeholder="https://youtu.be/..." autocomplete="off">
+              <button class="btn primary" id="ytGo" type="submit">Video lao</button>
+            </div>
+          </form>
+          <p id="linkNote" class="privacy" hidden>Link se video lene ke liye terminal me <span class="mono">python3 server.py</span> chalao aur <span class="mono">http://localhost:8000</span> kholo.</p>
+          <div class="row">
+            <label for="file" class="btn" id="pickBtn">Ya computer se video chuno</label>
+          </div>
+        </div>
+
+        <div id="playerWrap" hidden>
+          <video id="player" controls playsinline preload="metadata"></video>
+          <div class="fname"><span id="fname"></span><label for="file" class="btn">Doosri video chuno</label></div>
+        </div>
+
+        <div id="status" class="status" role="status" aria-live="polite" hidden>
+          <div id="statusText"></div>
+          <div id="prog" class="prog indet"><i id="progFill"></i></div>
+        </div>
+
+        <div class="tlhead">
+          <h2>Awaaz ka naksha</h2>
+          <span class="pill demo" id="demoPill">Namuna</span>
+        </div>
+        <div class="tlwrap" id="tlwrap">
+          <canvas id="tl" role="img" aria-label="Poori video me awaaz ki energy, chune gaye clips amber rang me"></canvas>
+          <div class="playhead" id="ph" hidden></div>
+        </div>
+        <div class="axis"><span id="ax0">0:00</span><span id="ax1"></span><span id="ax2"></span></div>
+        <div class="legend">
+          <span><i style="background:var(--bar)"></i>Awaaz ki energy</span>
+          <span><i style="background:var(--accent)"></i>Chune gaye clips (number = rank)</span>
+        </div>
+        <p id="demoNote" class="privacy" style="margin-top:10px">Ye 42 minute ki ek namuna podcast hai. Apni video daalte hi asli clips yahan aa jayenge.</p>
+      </div>
+    </section>
+
+    <section class="right" aria-label="Settings aur clips">
+      <div class="card controls">
+        <fieldset class="field">
+          <legend>Clip ki lambai</legend>
+          <div class="seg">
+            <input type="radio" name="len" id="len15" value="15"><label for="len15">15 sec</label>
+            <input type="radio" name="len" id="len30" value="30" checked><label for="len30">30 sec</label>
+            <input type="radio" name="len" id="len45" value="45"><label for="len45">45 sec</label>
+            <input type="radio" name="len" id="len60" value="60"><label for="len60">60 sec</label>
+          </div>
+        </fieldset>
+        <fieldset class="field">
+          <legend>Kitne clips</legend>
+          <div class="seg">
+            <input type="radio" name="cnt" id="cnt3" value="3"><label for="cnt3">3</label>
+            <input type="radio" name="cnt" id="cnt5" value="5" checked><label for="cnt5">5</label>
+            <input type="radio" name="cnt" id="cnt8" value="8"><label for="cnt8">8</label>
+          </div>
+        </fieldset>
+        <fieldset class="field">
+          <legend>Export format</legend>
+          <div class="seg">
+            <input type="radio" name="fmt" id="fmtV" value="vertical" checked><label for="fmtV">9:16 vertical</label>
+            <input type="radio" name="fmt" id="fmtO" value="original"><label for="fmtO">Original</label>
+          </div>
+        </fieldset>
+        <div class="field">
+          <label class="cap" for="credit">Credit (clip ke neeche dikhega)</label>
+          <input type="text" id="credit" placeholder="@channelname" maxlength="60" autocomplete="off">
+        </div>
+        <details>
+          <summary>Ye clips kaise chunta hai?</summary>
+          <p>Poori awaaz ko chhote hisso me tod ke dekhta hai: awaaz kitni ooncha hai, usme kitna utaar-chadhav hai, clip tez awaaz se shuru hota hai ya nahi, aur beech me lambi chuppi to nahi. Start aur end ko paas ke pause par le aata hai. Ye baat ka matlab ya topic nahi samajhta, isliye "Dekho" se check karke hi export karo.</p>
+        </details>
+      </div>
+
+      <div class="card clips">
+        <div class="clips-head">
+          <h2>Chune gaye clips</h2>
+          <span class="pill demo" id="clipPill">Namuna</span>
+        </div>
+        <ol id="list"></ol>
+        <p id="empty" class="empty" hidden></p>
+      </div>
+    </section>
+  </div>
+
+  <p class="foot">Credit likhne se permission nahi milti. Sirf wahi video clip karo jo tumhari apni ho ya jiski ijazat tumhare paas ho. Export ke dauran ye tab khula rakho, clip asli speed par record hota hai.</p>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
